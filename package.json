@@ -1,7 +1,7 @@
 {
   "name": "family-finance-controller",
   "version": "1.0.0",
-  "description": "Using for my family",
+  "description": "Used for my family",
   "main": "app.js",
   "scripts": {
     "test": "npm run standard && NODE_PATH=./config:./app/controllers NODE_ENV=testing ./node_modules/.bin/mocha --exit --reporter spec --timeout 10000 test/*.js",
