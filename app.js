@@ -35,7 +35,7 @@ autoload((err, result) => {
   require(path.join(__dirname, '/app/config/express'))(app)
 
   server.listen(app.get('port'), () => {
-    if (env === 'development') console.log(`\n✔ Courses ${CONFIG.SERVER.BASE_WEBHOST} in ${env} mode`)
+    if (env === 'development') console.log(`\n✔ Asal - asalan project ${CONFIG.SERVER.BASE_WEBHOST} in ${env} mode`)
   })
 })
 

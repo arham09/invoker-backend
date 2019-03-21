@@ -14,14 +14,14 @@ before((done) => {
   done()
 })
 
-describe('Index Page', () => {
-  it('GET /v1/ should return 404 page', (done) => {
+describe('Testing Page', () => {
+  it('GET /v1/ should return 200 page', (done) => {
     server
-      .post('/')
+      .get('/v1/testing/get')
       .expect('Content-type', /json/)
-      .expect(404)
+      .expect(200)
       .end((err, res) => {
-        res.status.should.equal(404)
+        res.status.should.equal(200)
         done()
       })
   })
