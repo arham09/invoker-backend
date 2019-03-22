@@ -11,3 +11,4 @@ node_modules
 *-lock.json
 *.lock
 .env
+ecosystem.json
