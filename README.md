@@ -4,8 +4,7 @@ API for Invoker Magic Joke
 [![Code Style](https://img.shields.io/badge/code%20style-standard-green.svg)](https://github.com/feross/standard)
 
 
-[Installation](#installation) |
-[Production Environment](#production-environment) |
+[Run](#run) |
 [License](#license)
 
 ## Run
