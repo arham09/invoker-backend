@@ -25,4 +25,4 @@ API for Invoker Magic Joke
 ### License
 ----
 
-[Beerware](https://en.wikipedia.org/wiki/Beerware "Beerware") © [Arham]
+[Beerware](https://en.wikipedia.org/wiki/Beerware "Beerware") © [Arham](https://twitter.com/arham_abiyan)
