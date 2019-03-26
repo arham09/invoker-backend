@@ -48,6 +48,42 @@ exports.get = (req, res) => {
   })
 }
 
-exports.createAmount = (req, res) => {
+/*
+ * POST : '/amounts/add'
+ *
+ * @desc Add amounts
+ *
+ * @body  {object} req - Bodies for request
+ * @body  {objectId} req.body.userId - Id user master
+ * @body  {objectId} req.body.spendingId - Id spending master
+ * @body  {objectId} req.body.amount - amount
+ *
+ * @return {object} Request object
+ */
 
+exports.createAmount = (req, res) => {
+  req.checkBody('userId', 'userId is required').notEmpty().isInt()
+  req.checkBody('spendingId', 'spendingId is required').notEmpty().isInt()
+  req.checkBody('amount', 'amount is required').notEmpty().isInt()
+
+  if (req.validationErrors()) {
+    return MiscHelper.errorCustomStatus(res, req.validationErrors(true))
+  }
+
+  const data = {
+    userid: req.body.userId,
+    spendingid: req.body.spendingId,
+    amount: req.body.amount,
+    status: 1,
+    created_at: new Date(),
+    updated_at: new Date()
+  }
+
+  amountModel.insertAmount(req, data, (errInsert, resultInsert) => {
+    if (!errInsert) {
+      return MiscHelper.responses(res, resultInsert)
+    } else {
+      return MiscHelper.errorCustomStatus(res, errInsert, 400)
+    }
+  })
 }
