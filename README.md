@@ -1,5 +1,5 @@
-# E-Learning
-API for E-Learning
+# Invoker
+API for Invoker Magic Joke
 
 [![Code Style](https://img.shields.io/badge/code%20style-standard-green.svg)](https://github.com/feross/standard)
 
@@ -8,7 +8,7 @@ API for E-Learning
 [Production Environment](#production-environment) |
 [License](#license)
 
-## Installation
+## Run
 
 ### Prerequisites
 - Node.js - Download and Install [Node.js](https://nodejs.org/en/) with [NVM](https://github.com/creationix/nvm) (Node Version Manager) - Simple bash script to manage multiple active node.js versions.
