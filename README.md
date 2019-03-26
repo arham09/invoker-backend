@@ -15,7 +15,7 @@ API for Invoker Magic Joke
 - Redis - Download and Install [Redis](https://redis.io/download/) - Make sure it's running on the default port.
 
 ```
-  $ git@github.com/sigmatech-eripin/e-learning.git
+  $ https://github.com/arham09/invoker-backend.git
   $ cd courses
   $ cp .env.sample .env
   $ npm install
