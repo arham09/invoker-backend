@@ -81,9 +81,52 @@ exports.createAmount = (req, res) => {
 
   amountModel.insertAmount(req, data, (errInsert, resultInsert) => {
     if (!errInsert) {
+      redisCache.delwild(`get-amounts-*`)
       return MiscHelper.responses(res, resultInsert)
     } else {
       return MiscHelper.errorCustomStatus(res, errInsert, 400)
+    }
+  })
+}
+
+exports.updateAmount = (req, res) => {
+  req.checkParams('amountId', 'amountId is required').notEmpty().isInt()
+
+  if (req.validationErrors()) {
+    return MiscHelper.errorCustomStatus(res, req.validationErrors(true))
+  }
+
+  async.waterfall([
+    (cb) => {
+      amountModel.checkAmount(req, req.params.amountId, (err, result) => {
+        if (_.isEmpty(result) || err) {
+          return MiscHelper.errorCustomStatus(res, { message: 'Data is not exist' })
+        } else {
+          console.log(`success #1`)
+          cb(null, result)
+        }
+      })
+    },
+    (dataPrev, cb) => {
+      const spendingId = _.result(req.body, 'spendingId', dataPrev.spendingid)
+      const amount = _.result(req.body, 'amount', dataPrev.amount)
+
+      const data = {
+        spendingid: spendingId,
+        amount: amount,
+        updated_at: new Date()
+      }
+
+      amountModel.updateAmount(req, data, req.params.amountId, (errUpdate, resultUpdate) => {
+        redisCache.delwild('get-amount-*')
+        cb(errUpdate, resultUpdate)
+      })
+    }
+  ], (errUpdate, resultUpdate) => {
+    if (!errUpdate) {
+      return MiscHelper.responses(res, resultUpdate)
+    } else {
+      return MiscHelper.errorCustomStatus(res, errUpdate)
     }
   })
 }
