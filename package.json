@@ -16,9 +16,9 @@
   "author": "Arham Abiyan",
   "license": "ISC",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/arham09/invoker-backend/issues"
   },
-  "homepage": "https://github.com/sigmatech-eripin/e-learning#readme",
+  "homepage": "https://github.com/arham09/invoker-backend#readme",
   "pre-commit": [
     "standard",
     "test"
