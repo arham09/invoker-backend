@@ -8,5 +8,6 @@ Route
   .get('/get', AmountsControllers.get)
   .post('/add', AmountsControllers.createAmount)
   .patch('/edit/:amountId', AmountsControllers.updateAmount)
+  .delete('/delete/:amountId', AmountsControllers.deleteAmount)
 
 module.exports = Route

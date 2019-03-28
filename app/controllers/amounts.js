@@ -102,7 +102,6 @@ exports.updateAmount = (req, res) => {
         if (_.isEmpty(result) || err) {
           return MiscHelper.errorCustomStatus(res, { message: 'Data is not exist' })
         } else {
-          console.log(`success #1`)
           cb(null, result)
         }
       })
@@ -127,6 +126,38 @@ exports.updateAmount = (req, res) => {
       return MiscHelper.responses(res, resultUpdate)
     } else {
       return MiscHelper.errorCustomStatus(res, errUpdate)
+    }
+  })
+}
+
+exports.deleteAmount = (req, res) => {
+  req.checkParams('amountId', 'amountId is required').notEmpty().isInt()
+
+  if (req.validationErrors()) {
+    return MiscHelper.errorCustomStatus(res, req.validationErrors(true))
+  }
+
+  async.waterfall([
+    (cb) => {
+      amountModel.checkAmount(req, req.params.amountId, (err, result) => {
+        if (_.isEmpty(result) || err) {
+          return MiscHelper.errorCustomStatus(res, { message: 'Data is not exist' })
+        } else {
+          cb(null)
+        }
+      })
+    },
+    (cb) => {
+      amountModel.deleteAmount(req, req.params.amountId, (errDelete, resultDelete) => {
+        redisCache.delwild(`get-amount-*`)
+        cb(errDelete, resultDelete)
+      })
+    }
+  ], (errDel, resultDel) => {
+    if (!errDel) {
+      return MiscHelper.responses(res, resultDel)
+    } else {
+      return MiscHelper.errorCustomStatus(res, errDel)
     }
   })
 }

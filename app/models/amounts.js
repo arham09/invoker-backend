@@ -40,5 +40,14 @@ module.exports = {
         callback(err, rows.affectedRows > 0 ? _.merge(data, { amountid: amountId }) : [])
       })
     })
+  },
+  deleteAmount: (conn, amountId, callback) => {
+    conn.getConnection((errConnection, connection) => {
+      if (errConnection) console.error(errConnection)
+
+      connection.query(`UPDATE amount_tab SET status = 0 WHERE amountid = ?`, amountId, (err) => {
+        callback(err, { message: `Data has been deleted` })
+      })
+    })
   }
 }
