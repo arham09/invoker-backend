@@ -106,6 +106,7 @@ exports.updateSpending = (req, res) => {
 }
 
 exports.deleteSpending = (req, res) => {
+  let abc = 0
   req.checkParams('spendingId', 'spendingId is required').notEmpty().isInt()
 
   if (req.validationErrors()) {
