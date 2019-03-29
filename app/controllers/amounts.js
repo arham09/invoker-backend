@@ -21,29 +21,29 @@ exports.get = (req, res) => {
 
   async.waterfall([
     (cb) => {
-      redisCache.get(key, tests => {
-        if (tests) {
-          return MiscHelper.responses(res, tests)
+      redisCache.get(key, amounts => {
+        if (amounts) {
+          return MiscHelper.responses(res, amounts)
         } else {
           cb(null)
         }
       })
     },
     (cb) => {
-      amountModel.get(req, (errTest, resultTest) => {
-        cb(errTest, resultTest)
+      amountModel.get(req, (errAmounts, resultAmounts) => {
+        cb(errAmounts, resultAmounts)
       })
     },
-    (dataTest, cb) => {
-      redisCache.setex(key, 1800, dataTest)
+    (dataAmounts, cb) => {
+      redisCache.setex(key, 1800, dataAmounts)
       console.log(`${key} is cached`)
-      cb(null, dataTest)
+      cb(null, dataAmounts)
     }
-  ], (errTests, resultTests) => {
-    if (!errTests) {
-      return MiscHelper.responses(res, resultTests)
+  ], (errAmounts, resultAmounts) => {
+    if (!errAmounts) {
+      return MiscHelper.responses(res, resultAmounts)
     } else {
-      return MiscHelper.errorCustomStatus(res, errTests, 404)
+      return MiscHelper.errorCustomStatus(res, errAmounts, 404)
     }
   })
 }
@@ -102,7 +102,7 @@ exports.updateAmount = (req, res) => {
         if (_.isEmpty(result) || err) {
           return MiscHelper.errorCustomStatus(res, { message: 'Data is not exist' })
         } else {
-          cb(null, result)
+          cb(null, result[0])
         }
       })
     },
