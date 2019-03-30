@@ -17,21 +17,34 @@ const redisCache = require('../libs/RedisCache')
  */
 
 exports.get = (req, res) => {
-  const key = `get-amounts`
+  const limit = _.result(req.query, 'limit', 10)
+  const offset = _.result(req.query, 'offset', 0)
+  const keyword = _.result(req.query, 'keyword', '')
+
+  const key = `get-amounts-${limit}-${offset}-${keyword}`
 
   async.waterfall([
     (cb) => {
       redisCache.get(key, amounts => {
-        if (amounts) {
-          return MiscHelper.responses(res, amounts)
+        if (_.result(amounts, 'data')) {
+          return MiscHelper.responses(res, amounts.data, 200, { total: amounts.total })
         } else {
           cb(null)
         }
       })
     },
     (cb) => {
-      amountModel.get(req, (errAmounts, resultAmounts) => {
+      amountModel.get(req, limit, offset, keyword, (errAmounts, resultAmounts) => {
         cb(errAmounts, resultAmounts)
+      })
+    },
+    (amounts, cb) => {
+      amountModel.checkTotalClass(req, keyword, (errAmounts, total) => {
+        const dataResult = {
+          data: amounts,
+          total: total[0].total
+        }
+        cb(errAmounts, dataResult)
       })
     },
     (dataAmounts, cb) => {
@@ -41,7 +54,7 @@ exports.get = (req, res) => {
     }
   ], (errAmounts, resultAmounts) => {
     if (!errAmounts) {
-      return MiscHelper.responses(res, resultAmounts)
+      return MiscHelper.responses(res, resultAmounts.data, 200, { total: resultAmounts.total })
     } else {
       return MiscHelper.errorCustomStatus(res, errAmounts, 404)
     }

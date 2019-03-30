@@ -1,11 +1,20 @@
 'use strict'
 
 module.exports = {
-  get: (conn, callback) => {
+  get: (conn, limit, offset, keyword, callback) => {
     conn.getConnection((errConnection, connection) => {
       if (errConnection) console.error(errConnection)
 
-      connection.query(`SELECT * FROM amount_tab WHERE status = 1`, (err, rows) => {
+      connection.query(`SELECT a.amountid, b.userid, c.spendingid, c.name AS spending, b.fullname AS name, a.amount, a.created_at FROM amount_tab a JOIN users_tab b ON a.userid = b.userid JOIN spending_tab c ON a.spendingid = c.spendingid WHERE a.status = 1 AND (c.name LIKE '%${keyword}%' OR b.fullname LIKE '%${keyword}%') ORDER BY a.created_at DESC LIMIT ${offset}, ${limit}`, (err, rows) => {
+        callback(err, rows)
+      })
+    })
+  },
+  checkTotalClass: (conn, keyword, callback) => {
+    conn.getConnection((errConnection, connection) => {
+      if (errConnection) console.error(errConnection)
+
+      connection.query(`SELECT COUNT(*) as total FROM amount_tab a JOIN users_tab b ON a.userid = b.userid JOIN spending_tab c WHERE a.status = 1 AND (c.name LIKE '%${keyword}%' OR b.fullname LIKE '%${keyword}%')`, (err, rows) => {
         callback(err, rows)
       })
     })
