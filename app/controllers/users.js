@@ -5,7 +5,7 @@
 const async = require('async')
 // const moment = require('moment')
 const isRealEmail = require('mailchecker/platform/node').isValid
-// const jsonwebtoken = require('jsonwebtoken')
+const jsonwebtoken = require('jsonwebtoken')
 const usersModel = require('../models/users')
 // const redisCache = require('../libs/RedisCache')
 
@@ -74,6 +74,52 @@ exports.register = (req, res) => {
       return MiscHelper.responses(res, resultUser)
     } else {
       return MiscHelper.errorCustomStatus(res, errUser)
+    }
+  })
+}
+
+exports.login = (req, res) => {
+  req.checkBody('email', 'email is required').notEmpty()
+  req.checkBody('password', 'password is required').notEmpty()
+
+  if (req.validationErrors()) {
+    return MiscHelper.errorCustomStatus(res, req.validationErrors(true))
+  }
+
+  async.waterfall([
+    (cb) => {
+      usersModel.getUserByEmail(req, req.body.email, (errUser, user) => {
+        if (!user) return MiscHelper.notFound(res, 'Email Not Found')
+        const dataUser = _.result(user, '[0]')
+        if (_.result(dataUser, 'salt')) {
+          if (MiscHelper.setPassword(req.body.password, dataUser.salt).passwordHash === dataUser.password) {
+            cb(errUser, dataUser)
+          } else {
+            return MiscHelper.errorCustomStatus(res, 'Email or password is invalid!', 400)
+          }
+        } else {
+          return MiscHelper.errorCustomStatus(res, 'Email not found!', 404)
+        }
+      })
+    },
+    (user, cb) => {
+      const data = {
+        token: jsonwebtoken.sign({ iss: user.userid, type: 'mobile' }, CONFIG.CLIENT_SECRET, { expiresIn: CONFIG.TOKEN_EXPIRED }),
+        updated_at: new Date()
+      }
+
+      usersModel.update(req, user.userid, data, (err, updateUser) => {
+        user.token = data.token
+        delete user.password
+        delete user.salt
+        cb(err, user)
+      })
+    }
+  ], (errUser, resultUser) => {
+    if (!errUser) {
+      return MiscHelper.responses(res, resultUser)
+    } else {
+      return MiscHelper.errorCustomStatus(res, errUser, 400)
     }
   })
 }

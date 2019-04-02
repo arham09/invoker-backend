@@ -23,8 +23,10 @@ const CONFIG = {
   },
   SESSION_SECRET: process.env.SESSION_SECRET || 'zd_TEkgW5C_$8]j.',
   REQUEST_HEADERS: {
-    Authorization: 'X_MONEY'
-  }
+    Authorization: 'X_MONEY_API'
+  },
+  CLIENT_SECRET: process.env.CLIENT_SECRET,
+  TOKEN_EXPIRED: '1 day'
 }
 
 module.exports = CONFIG
