@@ -39,7 +39,8 @@ exports.get = (req, res) => {
       })
     },
     (amounts, cb) => {
-      amountModel.checkTotalClass(req, keyword, (errAmounts, total) => {
+      amountModel.checkTotalAmount(req, keyword, (errAmounts, total) => {
+        console.log(total)
         const dataResult = {
           data: amounts,
           total: total[0].total
