@@ -10,11 +10,11 @@ module.exports = {
       })
     })
   },
-  checkTotalClass: (conn, keyword, callback) => {
+  checkTotalAmount: (conn, keyword, callback) => {
     conn.getConnection((errConnection, connection) => {
       if (errConnection) console.error(errConnection)
 
-      connection.query(`SELECT COUNT(*) as total FROM amount_tab a JOIN users_tab b ON a.userid = b.userid JOIN spending_tab c WHERE a.status = 1 AND (c.name LIKE '%${keyword}%' OR b.fullname LIKE '%${keyword}%')`, (err, rows) => {
+      connection.query(`SELECT COUNT(a.amountid) as total FROM amount_tab a JOIN users_tab b ON a.userid = b.userid JOIN spending_tab c ON a.spendingid = c.spendingid WHERE a.status = 1 AND (c.name LIKE '%${keyword}%' OR b.fullname LIKE '%${keyword}%')`, (err, rows) => {
         callback(err, rows)
       })
     })
