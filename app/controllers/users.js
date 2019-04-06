@@ -123,3 +123,19 @@ exports.login = (req, res) => {
     }
   })
 }
+
+exports.logout = (req, res) => {
+  const userId = parseInt(req.headers['x-control-user'])
+
+  if (!userId) return MiscHelper.errorCustomStatus(res, 'UserID required.', 400)
+
+  const data = {
+    token: jsonwebtoken.sign({ iss: userId, type: 'mobile' }, CONFIG.CLIENT_SECRET, { expiresIn: CONFIG.TOKEN_EXPIRED }),
+    updated_at: new Date()
+  }
+
+  usersModel.update(req, userId, data, (err, updateUser) => {
+    if (err || !updateUser) return MiscHelper.errorCustomStatus(res, err || 'Failed Logout.', 400)
+    return MiscHelper.responses(res, 'success logout.')
+  })
+}
