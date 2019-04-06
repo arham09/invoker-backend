@@ -7,8 +7,8 @@ var Route = express.Router()
 Route
   .all('/*', AuthHelper.requiresAuthorization)
   .get('/get', AuthHelper.requiresAccessToken, AmountsControllers.get)
-  .post('/add', AmountsControllers.createAmount)
-  .patch('/edit/:amountId', AmountsControllers.updateAmount)
-  .delete('/delete/:amountId', AmountsControllers.deleteAmount)
+  .post('/add', AuthHelper.requiresAccessToken, AmountsControllers.createAmount)
+  .patch('/edit/:amountId', AuthHelper.requiresAccessToken, AmountsControllers.updateAmount)
+  .delete('/delete/:amountId', AuthHelper.requiresAccessToken, AmountsControllers.deleteAmount)
 
 module.exports = Route
