@@ -45,7 +45,6 @@ exports.register = (req, res) => {
     },
     (email, cb) => {
       usersModel.getUserByEmail(req, email, (errUser, user) => {
-        console.log(user)
         if (user && user.length > 0) {
           return MiscHelper.errorCustomStatus(res, 'Email already exists, please choose another email or do forgot password.')
         }
@@ -60,6 +59,7 @@ exports.register = (req, res) => {
         fullname: req.body.fullname,
         password: passwordHash.passwordHash,
         salt: passwordHash.salt,
+        token: '',
         status: 1,
         created_at: new Date(),
         updated_at: new Date()

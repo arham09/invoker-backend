@@ -1,6 +1,7 @@
 'use strict'
 
 const uuidV4 = require('uuid/v4')
+const crypto = require('crypto')
 
 module.exports = {
   errorCustomStatus: (res, err, status) => {
@@ -30,7 +31,7 @@ module.exports = {
     return res.status(404).json(resultPrint)
   },
   responses: (res, obj, status, extra) => {
-    var resultPrint = {}
+    let resultPrint = {}
 
     resultPrint.id = uuidV4()
     resultPrint.status = status || 200
@@ -48,7 +49,6 @@ module.exports = {
     return res.status(resultPrint.status).json(resultPrint)
   },
   setPassword: (password, salt) => {
-    const crypto = require('crypto')
     let hash = crypto.createHmac('sha512', salt)
     hash.update(password)
     let value = hash.digest('hex')
@@ -58,7 +58,6 @@ module.exports = {
     }
   },
   generateSalt: (length) => {
-    const crypto = require('crypto')
     return crypto.randomBytes(Math.ceil(length / 2)).toString('hex').slice(0, length)
   },
   validatePassword: (password) => {

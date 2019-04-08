@@ -16,7 +16,7 @@ API for Invoker Magic Joke
 
 ```
   $ https://github.com/arham09/invoker-backend.git
-  $ cd courses
+  $ cd invoker-backend
   $ cp .env.sample .env
   $ npm install
   $ npm start
