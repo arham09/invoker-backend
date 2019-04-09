@@ -8,5 +8,6 @@ Route
   .all('/*', AuthHelper.requiresAuthorization)
   .post('/register', UsersControllers.register)
   .post('/login', UsersControllers.login)
+  .get('/request-token', AuthHelper.requiresAccessToken, UsersControllers.requestToken)
 
 module.exports = Route

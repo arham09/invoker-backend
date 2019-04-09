@@ -23,6 +23,15 @@ module.exports = {
       })
     })
   },
+  getUserById: (conn, id, callback) => {
+    conn.getConnection((errConnection, connection) => {
+      if (errConnection) console.error(errConnection)
+
+      connection.query(`SELECT * FROM users_tab WHERE userid = ?`, id, (err, rows) => {
+        callback(err, rows)
+      })
+    })
+  },
   update: (conn, id, data, callback) => {
     conn.getConnection((errConnection, connection) => {
       if (errConnection) console.error(errConnection)

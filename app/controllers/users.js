@@ -139,3 +139,54 @@ exports.logout = (req, res) => {
     return MiscHelper.responses(res, 'success logout.')
   })
 }
+
+exports.requestToken = (req, res) => {
+  const userId = parseInt(req.headers['x-control-user'])
+  const accessToken = req.headers['x-token-client']
+
+  if (!userId || !accessToken) return MiscHelper.errorCustomStatus(res, 'UserId and accessToken is required', 400)
+
+  async.waterfall([
+    (cb) => {
+      cb(null, jsonwebtoken.decode(accessToken, { complete: true }))
+    },
+    (token, cb) => {
+      if (userId !== parseInt(_.result(token, 'payload.iss', 0))) {
+        return MiscHelper.errorCustomStatus(res, 'Invalid auth Token', 400)
+      } else {
+        usersModel.getUserById(req, token.payload.iss, (errUser, user) => {
+          if (!user || errUser) return MiscHelper.errorCustomStatus(res, errUser || 'User doesnt exists', 409)
+          const dataUser = _.result(user, '[0]')
+          if (_.result(dataUser, 'token')) {
+            if (dataUser.token === accessToken) {
+              cb(null, dataUser)
+            } else {
+              return MiscHelper.errorCustomStatus(res, 'Invalid access token', 400)
+            }
+          } else {
+            return MiscHelper.errorCustomStatus(res, 'Invalid access token', 400)
+          }
+        })
+      }
+    },
+    (user, cb) => {
+      const data = {
+        token: jsonwebtoken.sign({ iss: user.userid, type: 'mobile' }, CONFIG.CLIENT_SECRET, { expiresIn: CONFIG.TOKEN_EXPIRED }),
+        updated_at: new Date()
+      }
+
+      usersModel.update(req, user.userid, data, (errUpdate, resultUpdate) => {
+        user.token = resultUpdate.token
+        delete user.password
+        delete user.salt
+        cb(errUpdate, user)
+      })
+    }
+  ], (errToken, resultToken) => {
+    if (!errToken) {
+      return MiscHelper.responses(res, resultToken)
+    } else {
+      return MiscHelper.errorCustomStatus(res, errToken, 400)
+    }
+  })
+}
