@@ -10,6 +10,15 @@ module.exports = {
       })
     })
   },
+  getAmount: (conn, amountId, callback) => {
+    conn.getConnection((errConnection, connection) => {
+      if (errConnection) console.error(errConnection)
+
+      connection.query(`SELECT a.amountid, b.userid, c.spendingid, c.name AS spending, b.fullname AS name, a.amount, a.created_at FROM amount_tab a JOIN users_tab b ON a.userid = b.userid JOIN spending_tab c ON a.spendingid = c.spendingid WHERE a.status = 1 AND amountid = ?`, amountId, (err, rows) => {
+        callback(err, rows)
+      })
+    })
+  },
   checkTotalAmount: (conn, keyword, callback) => {
     conn.getConnection((errConnection, connection) => {
       if (errConnection) console.error(errConnection)

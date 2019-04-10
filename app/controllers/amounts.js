@@ -174,3 +174,41 @@ exports.deleteAmount = (req, res) => {
     }
   })
 }
+
+exports.getDetail = (req, res) => {
+  req.checkParams('amountId', 'amountId is required').notEmpty().isInt()
+
+  if (req.validationErrors()) {
+    return MiscHelper.errorCustomStatus(res, req.validationErrors(true))
+  }
+
+  const key = `get-amounts-${req.params.amountId}`
+
+  async.waterfall([
+    (cb) => {
+      redisCache.get(key, amount => {
+        if (amount) {
+          return MiscHelper.responses(res, amount)
+        } else {
+          cb(null)
+        }
+      })
+    },
+    (cb) => {
+      amountModel.getAmount(req, req.params.amountId, (errAmount, resultAmount) => {
+        cb(errAmount, resultAmount[0])
+      })
+    },
+    (dataAmount, cb) => {
+      redisCache.setex(key, 1800, dataAmount)
+      console.log(`${key} is cached`)
+      cb(null, dataAmount)
+    }
+  ], (errAmount, resultAmount) => {
+    if (!errAmount) {
+      return MiscHelper.responses(res, resultAmount)
+    } else {
+      return MiscHelper.errorCustomStatus(res, errAmount)
+    }
+  })
+}
