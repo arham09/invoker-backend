@@ -11,8 +11,9 @@ const _ = require('lodash')
 const server = supertest(App.server)
 
 let token = null
+
 const email = 'arham.abiyan@gmail.com'
-const password = 'Asulahlo31>'
+const password = 'Asulahlo123>'
 
 before((done) => {
   done()
@@ -64,7 +65,6 @@ describe('Post Amount', () => {
         res.status.should.equal(200)
         done()
       })
-
   })
 })
 

@@ -190,3 +190,55 @@ exports.requestToken = (req, res) => {
     }
   })
 }
+
+exports.changePassword = (req, res) => {
+  req.checkBody('email', 'email is required').notEmpty()
+  req.checkBody('password', 'password is required').notEmpty()
+  req.checkBody('confpassword', 'Confirm password is required').notEmpty()
+
+  if (req.validationErrors()) {
+    return MiscHelper.errorCustomStatus(res, req.validationErrors(true))
+  }
+
+  async.waterfall([
+    (cb) => {
+      if (req.body.password === req.body.confpassword) {
+        cb(null)
+      } else {
+        return MiscHelper.errorCustomStatus(res, 'Password is different', 400)
+      }
+    },
+    (cb) => {
+      usersModel.getUserByEmail(req, req.body.email, (errUser, user) => {
+        if (_.isEmpty(user) || errUser) {
+          return MiscHelper.errorCustomStatus(res, 'Email not found')
+        } else {
+          cb(null, user[0])
+        }
+      })
+    },
+    (user, cb) => {
+      console.log(user.userid)
+      const salt = MiscHelper.generateSalt(18)
+      const passwordHash = MiscHelper.setPassword(req.body.password, salt)
+      const data = {
+        password: passwordHash.passwordHash,
+        salt: passwordHash.salt,
+        token: jsonwebtoken.sign({ iss: user.userid, type: 'mobile' }, CONFIG.CLIENT_SECRET, { expiresIn: CONFIG.TOKEN_EXPIRED }),
+        updated_at: new Date()
+      }
+
+      usersModel.update(req, user.userid, data, (err, updateUser) => {
+        delete user.password
+        delete user.salt
+        cb(err, user)
+      })
+    }
+  ], (errUser, resultUser) => {
+    if (!errUser) {
+      return MiscHelper.responses(res, resultUser)
+    } else {
+      return MiscHelper.errorCustomStatus(res, errUser, 400)
+    }
+  })
+}
