@@ -10,31 +10,39 @@ const _ = require('lodash')
 
 const server = supertest(App.server)
 
+let token = null
+
 before((done) => {
   done()
 })
 
-// describe('Testing Page', () => {
-//   it('GET /v1/testing/get should return 200 page', (done) => {
-//     server
-//       .get('/v1/testing/get')
-//       .expect('Content-type', /json/)
-//       .expect(200)
-//       .end((err, res) => {
-//         res.status.should.equal(200)
-//         done()
-//       })
-//   })
-// })
-
-describe('Index Page', () => {
-  it('GET /v1/ should return 404 page', (done) => {
+describe('Login Page', () => {
+  it('Login Page to get token', (done) => {
     server
-      .get('/v1')
+      .post('/v1/users/login')
       .expect('Content-type', /json/)
-      .expect(404)
+      .set('Authorization', 'X-CONTROL-APP')
+      .send({ email: 'arham.abiyan@gmail.com', password: 'Asulahlo31>'})
+      .expect(200)
       .end((err, res) => {
-        res.status.should.equal(404)
+        token = res.body.data.token
+        res.status.should.equal(200)
+        done()
+      })
+  })
+})
+
+describe('Get All Amount', () => {
+  it('GET all amount should get 200 page', (done) => {
+    server
+      .get('/v1/amounts/get')
+      .expect('Content-type', /json/)
+      .set('Authorization', 'X-CONTROL-APP')
+      .set('X-CONTROL-USER', 2)
+      .set('X-TOKEN-CLIENT', token)
+      .expect(200)
+      .end((err, res) => {
+        res.status.should.equal(200)
         done()
       })
   })
