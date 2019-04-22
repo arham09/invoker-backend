@@ -11,6 +11,8 @@ const _ = require('lodash')
 const server = supertest(App.server)
 
 let token = null
+const email = 'arham.abiyan@gmail.com'
+const password = 'Asulahlo31>'
 
 before((done) => {
   done()
@@ -22,7 +24,7 @@ describe('Login Page', () => {
       .post('/v1/users/login')
       .expect('Content-type', /json/)
       .set('Authorization', 'X-CONTROL-APP')
-      .send({ email: 'arham.abiyan@gmail.com', password: 'Asulahlo31>'})
+      .send({ email: email, password: password })
       .expect(200)
       .end((err, res) => {
         token = res.body.data.token
@@ -45,6 +47,24 @@ describe('Get All Amount', () => {
         res.status.should.equal(200)
         done()
       })
+  })
+})
+
+describe('Post Amount', () => {
+  it('Post amount', (done) => {
+    server
+      .post('/v1/amounts/add')
+      .expect('Content-type', /json/)
+      .set('Authorization', 'X-CONTROL-APP')
+      .set('X-CONTROL-USER', 2)
+      .set('X-TOKEN-CLIENT', token)
+      .send({ userId: 2, spendingId: 1, amount: 1239 })
+      .expect(200)
+      .end((err, res) => {
+        res.status.should.equal(200)
+        done()
+      })
+
   })
 })
 
