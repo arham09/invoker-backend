@@ -49,7 +49,6 @@ exports.get = (req, res) => {
     },
     (dataAmounts, cb) => {
       redisCache.setex(key, 1800, dataAmounts)
-      console.log(`${key} is cached`)
       cb(null, dataAmounts)
     }
   ], (errAmounts, resultAmounts) => {
@@ -201,7 +200,6 @@ exports.getDetail = (req, res) => {
     },
     (dataAmount, cb) => {
       redisCache.setex(key, 1800, dataAmount)
-      console.log(`${key} is cached`)
       cb(null, dataAmount)
     }
   ], (errAmount, resultAmount) => {

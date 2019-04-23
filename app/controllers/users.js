@@ -218,7 +218,6 @@ exports.changePassword = (req, res) => {
       })
     },
     (user, cb) => {
-      console.log(user.userid)
       const salt = MiscHelper.generateSalt(18)
       const passwordHash = MiscHelper.setPassword(req.body.password, salt)
       const data = {
