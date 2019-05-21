@@ -46,6 +46,7 @@ describe('Get All Amount', () => {
       .set('X-TOKEN-CLIENT', token)
       .expect(200)
       .end((err, res) => {
+        res.body.should.have.property('data').which.is.a.Array()
         res.status.should.equal(200)
         done()
       })
